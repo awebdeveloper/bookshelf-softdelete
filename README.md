@@ -16,7 +16,7 @@ Then in your bookshelf configuration:
 
 On your bookshelf Model which you would like to mark for soft deletion mention the field name:
 
-    soft: FIELD_NAME 
+    soft: 'FIELD_NAME' 
 
 
 Please note that this will set 0 or 1
@@ -38,7 +38,7 @@ This package has an initialize function that wires everthing up. If you declare 
 
     module.exports = repository.Model.extend({
       tableName: 'users',
-      soft: true,
+      soft: 'is_valid',
 
       initialize: function() {
         this.on('saving', this.validate);
