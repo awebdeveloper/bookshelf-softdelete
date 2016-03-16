@@ -50,4 +50,7 @@ This package has an initialize function that wires everthing up. If you declare 
       }
     });
 
+
+
+### Credits
 This is based on https://github.com/lanetix/node-bookshelf-soft-delete.git
