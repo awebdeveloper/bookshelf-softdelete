@@ -1,6 +1,6 @@
 {
   "name": "bookshelf-softdelete",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bookshelf softdelete",
   "main": "index.js",
   "scripts": {
