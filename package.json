@@ -1,0 +1,17 @@
+{
+  "name": "bookshelf-soft-delete",
+  "version": "1.0.0",
+  "description": "Bookshelf softdelete",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bookshelf",
+    "knex",
+    "express",
+    "node"
+  ],
+  "author": "AWebDeveloper",
+  "license": "ISC"
+}
