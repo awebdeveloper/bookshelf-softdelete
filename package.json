@@ -14,7 +14,7 @@
   ],
   "author": "AWebDeveloper",
   "license": "ISC",
-  "repository":  "repository": {
+  "repository": {
     "type": "git",
     "url": "https://github.com/awebdeveloper/bookshelf-softdelete"
   },
