@@ -18,8 +18,12 @@ On your bookshelf Model which you would like to mark for soft deletion mention t
 
     soft: 'FIELD_NAME' 
 
+Please note that this will set 0(default) or 1(deleted). You can explicity specify the deleted value. It can be a number or string 
 
-Please note that this will set 0 or 1
+    soft: {
+        'field': 'FIELD_NAME',
+        'val': {'normal': 1, 'deleted': 0}
+    },
 
 If you wish to disable soft delete for a given operation, e.g., `fetch`, simply
 pass an object with `softDelete: false` to that operation.
