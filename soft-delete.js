@@ -3,22 +3,39 @@ function shouldDisable(opts) {
 }
 
 function addDeletionCheck(softField) {
-    var deletedField = softField;
+    var deletedField = softField.field;
+    var defaultValue = softField.val.normal;
 
     /*eslint-disable no-underscore-dangle*/
     if (this._knex) {
         var table = this._knex._single.table;
         /*eslint-enable no-underscore-dangle*/
-        deletedField = table + '.' + softField;
+        deletedField = table + '.' + deletedField;
     }
 
+    var whereClause = {};
+    whereClause[deletedField] = defaultValue;
+
     this.query(function(qb) {
+        console.log(qb);
         qb.where(function() {
-            var query = this.where({
-                deletedField : 0
-            });
+            var query = this.andWhere(whereClause);
         });
     });
+}
+
+function setSoftDeleteOptions(soft) {
+    if (typeof soft === "string") {
+        this.softField = {
+            field: soft,
+            val: {
+                normal: 0,
+                deleted:1
+            }
+        };
+    } else {
+        this.softField = soft || false;
+    }
 }
 
 module.exports = function(Bookshelf) {
@@ -26,22 +43,32 @@ module.exports = function(Bookshelf) {
     var mProto = Bookshelf.Model.prototype,
         cProto = Bookshelf.Collection.prototype;
 
+
     Bookshelf.Model = Bookshelf.Model.extend({
 
         initialize: function() {
+            setSoftDeleteOptions.call(this, this.soft);
             return mProto.initialize.apply(this, arguments);
         },
 
         fetch: function(opts) {
-            if (this.soft && !shouldDisable(opts)) {
-                addDeletionCheck.call(this, this.soft);
+            if (this.softField && !shouldDisable(opts)) {
+                addDeletionCheck.call(this, this.softField);
             }
             return mProto.fetch.apply(this, arguments);
         },
+        fetchAll: function(opts) {
+            if (this.softField && !shouldDisable(opts)) {
+                addDeletionCheck.call(this, this.softField);
+            }
+            return mProto.fetchAll.apply(this, arguments);
+        },
 
         restore: function() {
-            if (this.soft) {
-                this.set(this.soft, 0);
+            if (this.softField) {
+                var softField = this.softField.field;
+                var normalVal = this.softField.val.normal;
+                this.set(softField, normalVal);
                 return this.save();
             } else {
                 throw new TypeError('restore can not be used if the model does not ' +
@@ -50,12 +77,13 @@ module.exports = function(Bookshelf) {
         },
 
         destroy: function(opts) {
-            if (this.soft && !shouldDisable(opts)) {
+            if (this.softField && !shouldDisable(opts)) {
                 var model = this;
-                var softField = model.soft;
+                var softField  = model.softField.field;
+                var deletedVal = model.softField.val.deleted;
                 return model.triggerThen('destroying', model, opts)
                     .then(function() {
-                        model.set(softField, 1);
+                        model.set(softField, deletedVal);
                         return model.save();
                     })
                     .then(function() {
@@ -70,9 +98,10 @@ module.exports = function(Bookshelf) {
     Bookshelf.Collection = Bookshelf.Collection.extend({
         fetch: function(opts) {
             var modelOpts = {};
+            setSoftDeleteOptions.call(modelOpts, this.model.prototype.soft);
 
-            if (modelOpts.soft && !shouldDisable(opts)) {
-                addDeletionCheck.call(this, modelOpts.soft);
+            if (modelOpts.softField && !shouldDisable(opts)) {
+                addDeletionCheck.call(this, modelOpts.softField);
             }
             return cProto.fetch.apply(this, arguments);
         },
@@ -81,9 +110,10 @@ module.exports = function(Bookshelf) {
             opts = opts || field;
 
             var modelOpts = {};
+            setSoftDeleteOptions.call(modelOpts, this.model.prototype.soft);
 
-            if (modelOpts.soft && !shouldDisable(opts)) {
-                addDeletionCheck.call(this, modelOpts.soft);
+            if (modelOpts.softField && !shouldDisable(opts)) {
+                addDeletionCheck.call(this, modelOpts.softField);
             }
 
             return cProto.count.apply(this, arguments);
