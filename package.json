@@ -1,6 +1,6 @@
 {
   "name": "bookshelf-softdelete",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Bookshelf Plugin to support Soft Delete",
   "main": "index.js",
   "scripts": {
